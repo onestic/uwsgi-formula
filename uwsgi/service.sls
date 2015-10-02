@@ -6,7 +6,7 @@ include:
   - uwsgi.install
 
 {% if grains['os_family']=="Arch" %}
-#TODO 
+#TODO
 # still need to figure out how to get applicatication config name
 # as service name and iterate and refresh the right one.
 #
@@ -22,6 +22,19 @@ uwsgi_service:
       - sls: uwsgi.install
     - watch:
       - pkg: uwsgi_install
+
+{% elif grains['os_family']=="RedHat" %}
+
+uwsgi_service:
+  service.{{ service_function }}:
+    {{ sls_block(uwsgi.service.opts) }}
+    - name: {{ uwsgi.lookup.uwsgi_service }}
+    - enable: {{ uwsgi.service.enable }}
+    - require:
+      - sls: uwsgi.install
+    - watch:
+      - pkg: uwsgi_install
+
 {% else %}
 #TODO other os
 {% endif%}
